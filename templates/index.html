@@ -1,0 +1,296 @@
+{% extends "base.html" %} {% block title %}Početna - Grow{% endblock %} {% block
+content %}
+<div class="row">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="display-6">Dobrodošli u Grow</h1>
+      <div class="text-muted">
+        <i class="fas fa-calendar-alt"></i>
+        {{ today }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">  <div class="col-md-3">
+    <div class="card dashboard-card text-white mb-3" style="background: linear-gradient(135deg, #28a745 0%, #20c997 50%, #17a2b8 100%); border: none; border-radius: 1rem; box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div>
+            <h4 class="card-title" style="font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">{{ total_plants }}</h4>
+            <p class="card-text" style="text-shadow: 0 1px 3px rgba(0,0,0,0.2);">Aktivnih biljaka</p>
+          </div>
+          <div class="align-self-center">
+            <i class="fas fa-seedling fa-2x" style="opacity: 0.9; text-shadow: 0 2px 4px rgba(0,0,0,0.3);"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card dashboard-card text-white mb-3" style="background: linear-gradient(135deg, #007bff 0%, #6f42c1 50%, #e83e8c 100%); border: none; border-radius: 1rem; box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div>
+            <h4 class="card-title" style="font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">{{ total_events }}</h4>
+            <p class="card-text" style="text-shadow: 0 1px 3px rgba(0,0,0,0.2);">Ukupno događaja</p>
+          </div>
+          <div class="align-self-center">
+            <i class="fas fa-calendar-check fa-2x" style="opacity: 0.9; text-shadow: 0 2px 4px rgba(0,0,0,0.3);"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card dashboard-card text-white mb-3" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 50%, #dc3545 100%); border: none; border-radius: 1rem; box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div>
+            <h4 class="card-title" style="font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">{{ upcoming_reminders|length }}</h4>
+            <p class="card-text" style="text-shadow: 0 1px 3px rgba(0,0,0,0.2);">Nadolazeći podsjetnici</p>
+          </div>
+          <div class="align-self-center">
+            <i class="fas fa-bell fa-2x" style="opacity: 0.9; text-shadow: 0 2px 4px rgba(0,0,0,0.3);"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card dashboard-card text-white mb-3" style="background: linear-gradient(135deg, #dc3545 0%, #e83e8c 50%, #6f42c1 100%); border: none; border-radius: 1rem; box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <div>
+            <h4 class="card-title" style="font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">{{ plants_needing_attention|length }}</h4>
+            <p class="card-text" style="text-shadow: 0 1px 3px rgba(0,0,0,0.2);">Biljke trebaju pažnju</p>
+          </div>
+          <div class="align-self-center">
+            <i class="fas fa-exclamation-triangle fa-2x" style="opacity: 0.9; text-shadow: 0 2px 4px rgba(0,0,0,0.3);"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Alerts and Notifications -->
+{% if plants_needing_attention %}
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="alert alert-warning" role="alert">      <h5 class="alert-heading">
+        <i class="fas fa-exclamation-triangle"></i>
+        Biljke koje trebaju pažnju
+      </h5>
+      <div class="row">
+        {% for plant in plants_needing_attention[:3] %}
+        <div class="col-md-4">
+          <div class="d-flex align-items-center">
+            <div class="me-3">
+              {% if plant.urgency == 3 %}
+              <span class="badge bg-danger">Hitno</span>
+              {% elif plant.urgency == 2 %}
+              <span class="badge bg-warning">Srednje</span>
+              {% else %}
+              <span class="badge bg-info">Nisko</span>
+              {% endif %}
+            </div>
+            <div>
+              <strong>{{ plant.plant_name }}</strong><br />
+              <small>{{ plant.reason }}</small>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% if plants_needing_attention|length > 3 %}
+      <hr />
+      <p class="mb-0">
+        <a href="#" class="alert-link"
+          >Pogledaj sve ({{ plants_needing_attention|length }})</a
+        >
+      </p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Main Content Grid -->
+<div class="row">
+  <!-- Recent Events -->
+  <div class="col-lg-6 mb-4">
+    <div class="card h-100">
+      <div
+        class="card-header d-flex justify-content-between align-items-center"
+      >        <h5 class="mb-0">
+          <i class="fas fa-history text-primary me-2"></i>
+          Najnoviji događaji
+        </h5>
+        <a
+          href="{{ url_for('events') }}"
+          class="btn btn-sm btn-outline-primary"
+        >
+          <i class="fas fa-calendar-alt me-1"></i>
+          Svi događaji
+        </a>
+      </div>
+      <div class="card-body">
+        {% if recent_events %} {% for event in recent_events %}
+        <div
+          class="d-flex align-items-center mb-3 pb-3 {% if not loop.last %}border-bottom{% endif %}"
+        >
+          <div class="me-3">
+            <div
+              class="rounded-circle d-flex align-items-center justify-content-center"
+              style="width: 40px; height: 40px; background-color: {{ event.event_type.color }}20; color: {{ event.event_type.color }};"
+            >
+              <i
+                class="fas fa-{% if event.event_type.name == 'Zalijevanje' %}tint{% elif event.event_type.name == 'Gnojenje' %}seedling{% else %}calendar-alt{% endif %}"
+              ></i>
+            </div>
+          </div>
+          <div class="flex-grow-1">
+            <div class="fw-bold">{{ event.plant.name }}</div>
+            <div class="text-muted small">{{ event.event_type.name }}</div>
+            <div class="text-muted small">
+              <i class="fas fa-clock"></i>
+              {{ event.event_date.strftime('%d.%m.%Y %H:%M') }}
+            </div>
+          </div>
+          <div>
+            {% if event.is_completed %}
+            <span class="badge bg-success">Završeno</span>
+            {% else %}
+            <span class="badge bg-secondary">Planirano</span>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %} {% else %}
+        <div class="text-center text-muted py-4">
+          <i class="fas fa-calendar-times fa-3x text-muted"></i>
+          <p class="mt-2">Nema najnovijih događaja</p>
+          <a href="{{ url_for('add_event') }}" class="btn btn-primary">
+            Dodaj prvi događaj
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Upcoming Reminders -->
+  <div class="col-lg-6 mb-4">
+    <div class="card h-100">
+      <div
+        class="card-header d-flex justify-content-between align-items-center"
+      >        <h5 class="mb-0">
+          <i class="fas fa-bell text-warning me-2"></i>
+          Nadolazeći podsjetnici
+        </h5>
+        <a
+          href="{{ url_for('reminders') }}"
+          class="btn btn-sm btn-outline-warning"
+        >
+          <i class="fas fa-bell me-1"></i>
+          Svi podsjetnici
+        </a>
+      </div>
+      <div class="card-body">
+        {% if upcoming_reminders %} {% for reminder in upcoming_reminders[:5] %}
+        <div
+          class="d-flex align-items-center mb-3 pb-3 {% if not loop.last %}border-bottom{% endif %}"
+        >
+          <div class="me-3">
+            <div
+              class="rounded-circle d-flex align-items-center justify-content-center"
+              style="
+                width: 40px;
+                height: 40px;
+                background-color: #ffc10720;
+                color: #ffc107;
+              "
+            >
+              <i class="fas fa-bell"></i>
+            </div>
+          </div>
+          <div class="flex-grow-1">
+            <div class="fw-bold">{{ reminder.plant_name }}</div>
+            <div class="text-muted small">{{ reminder.event_type_name }}</div>
+            <div class="text-muted small">
+              <i class="fas fa-calendar-alt"></i>
+              {{ reminder.reminder_date.strftime('%d.%m.%Y %H:%M') }}
+            </div>
+          </div>
+          <div>
+            {% if reminder.days_until <= 0 %}
+            <span class="badge bg-danger">Danas</span>
+            {% elif reminder.days_until == 1 %}
+            <span class="badge bg-warning">Sutra</span>
+            {% else %}
+            <span class="badge bg-info">{{ reminder.days_until }} dana</span>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %} {% else %}
+        <div class="text-center text-muted py-4">
+          <i class="fas fa-bell-slash fa-3x text-muted"></i>
+          <p class="mt-2">Nema nadolazećih podsjetnika</p>
+          <small>Podsjetnici se automatski kreiraju za događaje</small>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Images Gallery -->
+{% if recent_images %}
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card">
+      <div
+        class="card-header d-flex justify-content-between align-items-center"
+      >
+        <h5 class="mb-0">
+          <i class="fas fa-images text-info me-2"></i>
+          Najnovije slike
+        </h5>
+        <a href="{{ url_for('gallery') }}" class="btn btn-sm btn-outline-info">
+          <i class="fas fa-images me-1"></i>
+          Sva galerija
+        </a>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          {% for image in recent_images %}
+          <div class="col-md-2 col-sm-4 col-6 mb-3">
+            <div class="card border-0">
+              <img
+                src="{{ url_for('uploaded_file', filename=image.filename) }}"
+                class="card-img-top rounded"
+                style="height: 120px; object-fit: cover"
+                alt="{{ image.description or image.plant.name }}"
+              />
+              <div class="card-body p-2">
+                <small class="text-muted">{{ image.plant.name }}</small>
+                <br />
+                <small class="text-muted"
+                  >{{ image.upload_date.strftime('%d.%m.%Y') }}</small
+                >
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %} {% endblock %}

@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Podsjetnici{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="display-6">Aktivni podsjetnici</h1>            <a href="{{ url_for('events') }}" class="btn btn-primary btn-lg action-btn-primary">
+                <i class="fas fa-calendar-alt me-2"></i>
+                <span>Svi događaji</span>
+            </a>
+            </div>
+
+            {% if reminders %}
+                <div class="row">
+                    {% for reminder in reminders %}
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card h-100 {% if reminder.status == 'Zakasnilo' %}border-danger{% elif reminder.status == 'Hitno' %}border-warning{% elif reminder.status == 'Uskoro' %}border-info{% endif %}">
+                                <div class="card-header d-flex justify-content-between align-items-center
+                                    {% if reminder.status == 'Zakasnilo' %}bg-danger text-white{% elif reminder.status == 'Hitno' %}bg-warning{% elif reminder.status == 'Uskoro' %}bg-info text-white{% else %}bg-light{% endif %}">
+                                    <small class="mb-0">
+                                        <strong>{{ reminder.reminder_date.strftime('%d.%m.%Y') }}</strong>
+                                        <br>
+                                        {{ reminder.reminder_date.strftime('%H:%M') }}
+                                    </small>
+                                    <span class="badge 
+                                        {% if reminder.status == 'Zakasnilo' %}bg-light text-danger{% elif reminder.status == 'Hitno' %}bg-dark{% elif reminder.status == 'Uskoro' %}bg-light text-info{% else %}bg-primary{% endif %}">
+                                        {{ reminder.status }}
+                                    </span>
+                                </div>
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <a href="{{ url_for('plant_detail', id=reminder.plant.id) }}" 
+                                           class="text-decoration-none">
+                                            🌱 {{ reminder.plant.name }}
+                                        </a>
+                                    </h6>
+                                    
+                                    {% if reminder.event_type %}
+                                        <p class="mb-2">
+                                            <span class="badge" style="background-color: {{ reminder.event_type.color }}; color: white;">
+                                                {{ reminder.event_type.name }}
+                                            </span>
+                                        </p>
+                                    {% endif %}
+                                    
+                                    <p class="card-text">{{ reminder.message }}</p>
+                                    
+                                    {% if reminder.days_until_reminder is not none %}
+                                        <small class="text-muted">
+                                            {% if reminder.days_until_reminder < 0 %}
+                                                ⏰ {{ -reminder.days_until_reminder }} dana zakasnilo
+                                            {% elif reminder.days_until_reminder == 0 %}
+                                                ⏰ Danas
+                                            {% elif reminder.days_until_reminder == 1 %}
+                                                ⏰ Sutra
+                                            {% else %}
+                                                ⏰ Za {{ reminder.days_until_reminder }} dana
+                                            {% endif %}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <div class="d-flex justify-content-between">
+                                        <form method="POST" action="{{ url_for('complete_reminder', id=reminder.id) }}" class="d-inline">
+                                            <button type="submit" class="btn btn-success btn-sm" 
+                                                    onclick="return confirm('Označiti podsjetnik kao završen?')">
+                                                <i class="fas fa-check"></i> Završeno
+                                            </button>
+                                        </form>
+                                        <a href="{{ url_for('plant_detail', id=reminder.plant.id) }}" 
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-eye"></i> Vidi biljku
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}                <div class="text-center py-5">
+                    <i class="fas fa-bell-slash fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">Nema aktivnih podsjetnika</h4>
+                    <p class="text-muted">Svi podsjetnici su završeni ili nema planiranih događaja</p>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <a href="{{ url_for('add_event') }}" class="btn btn-success btn-lg action-btn-primary">
+                            <i class="fas fa-calendar-plus me-2"></i>
+                            <span>Dodaj događaj</span>
+                        </a>
+                        <a href="{{ url_for('events') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-calendar-alt"></i> Vidi sve događaje
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Quick stats -->
+{% if reminders %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-3">
+                            <h5 class="text-danger">{{ reminders|selectattr('status', 'equalto', 'Zakasnilo')|list|length }}</h5>
+                            <small class="text-muted">Zakasnilo</small>
+                        </div>
+                        <div class="col-3">
+                            <h5 class="text-warning">{{ reminders|selectattr('status', 'equalto', 'Hitno')|list|length }}</h5>
+                            <small class="text-muted">Hitno</small>
+                        </div>
+                        <div class="col-3">
+                            <h5 class="text-info">{{ reminders|selectattr('status', 'equalto', 'Uskoro')|list|length }}</h5>
+                            <small class="text-muted">Uskoro</small>
+                        </div>
+                        <div class="col-3">
+                            <h5 class="text-primary">{{ reminders|length }}</h5>
+                            <small class="text-muted">Ukupno</small>
+                        </div>
+                    </div>
+                </div>
+            </div>        </div>
+    </div>
+
+<style>
+/* Primary Action Button (Add buttons) */
+.action-btn-primary {
+    border-radius: 0.75rem !important;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(135deg, #28a745, #34ce57);
+    border: none;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.action-btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.action-btn-primary:hover::before {
+    left: 100%;
+}
+
+.action-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    background: linear-gradient(135deg, #34ce57, #28a745);
+}
+
+.action-btn-primary:active {
+    transform: translateY(0);
+    transition: all 0.1s ease;
+}
+</style>
+
+{% endif %}
+{% endblock %}

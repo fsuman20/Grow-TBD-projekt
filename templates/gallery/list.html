@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block title %}Galerija slika | Grow{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">            
+        <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="display-6">Galerija slika</h1>
+                <a href="{{ url_for('upload_image') }}" class="btn btn-success btn-lg action-btn-primary">
+                    <i class="fas fa-cloud-upload-alt me-2"></i>
+                    <span>Učitaj sliku</span>
+                </a>
+            </div>
+
+            <!-- Filteri -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Biljka</label>
+                            <select name="plant" class="form-select">
+                                <option value="0">Sve biljke</option>
+                                {% for plant in plants %}
+                                <option value="{{ plant.id }}" {% if plant.id == selected_plant %}selected{% endif %}>
+                                    {{ plant.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>                        <div class="col-md-6 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-filter"></i> Filtriraj
+                            </button>
+                            <a href="{{ url_for('gallery') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i> Očisti
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Galerija slika -->
+            {% if images.items %}
+            <div class="row g-3">
+                {% for image in images.items %}
+                <div class="col-6 col-md-4 col-lg-3">
+                    <div class="card image-card h-100">
+                        <div class="position-relative">
+                            <img 
+                                src="{{ url_for('uploaded_file', filename=image.filename) }}" 
+                                class="card-img-top gallery-image"
+                                alt="{{ image.description or image.original_filename }}"
+                                style="height: 200px; object-fit: cover; cursor: pointer;"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#imageModal{{ image.id }}"
+                            />                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-dark bg-opacity-75">
+                                    <i class="fas fa-leaf"></i> {{ image.plant.name }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-body p-2">
+                            <p class="card-text small mb-1">
+                                {% if image.description %}
+                                <strong>{{ image.description }}</strong><br>
+                                {% endif %}
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar-alt"></i> {{ image.upload_date|date }}
+                                </small>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Modal za prikaz slike -->
+                    <div class="modal fade" id="imageModal{{ image.id }}" tabindex="-1">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">                                <div class="modal-header">
+                                    <h5 class="modal-title">
+                                        <i class="fas fa-leaf"></i> {{ image.plant.name }}
+                                        {% if image.description %} - {{ image.description }}{% endif %}
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body p-0">
+                                    <img 
+                                        src="{{ url_for('uploaded_file', filename=image.filename) }}" 
+                                        class="img-fluid w-100"
+                                        alt="{{ image.description or image.original_filename }}"
+                                    />
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="row w-100">
+                                        <div class="col-md-6">
+                                            <small class="text-muted">                                                <i class="fas fa-calendar-alt"></i> Učitano: {{ image.upload_date|datetime }}<br>
+                                                <i class="fas fa-file"></i> Datoteka: {{ image.original_filename }}<br>
+                                                <i class="fas fa-hdd"></i> Veličina: {{ "%.1f"|format(image.file_size/1024/1024) }} MB
+                                            </small>
+                                        </div>
+                                        <div class="col-md-6 text-end">
+                                            <a href="{{ url_for('plant_detail', id=image.plant.id) }}" 
+                                               class="btn btn-outline-success btn-sm">
+                                                <i class="fas fa-leaf"></i> Vidi biljku
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Paginacija -->
+            {% if images.pages > 1 %}
+            <nav aria-label="Paginacija galerije" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if images.has_prev %}
+                    <li class="page-item">                        <a class="page-link" href="{{ url_for('gallery', page=images.prev_num, plant=selected_plant) }}">
+                            <i class="fas fa-chevron-left"></i> Prethodna
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for page_num in images.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != images.page %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('gallery', page=page_num, plant=selected_plant) }}">
+                                    {{ page_num }}
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">…</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if images.has_next %}
+                    <li class="page-item">                        <a class="page-link" href="{{ url_for('gallery', page=images.next_num, plant=selected_plant) }}">
+                            Sljedeća <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}            <!-- Prazna galerija -->
+            <div class="text-center py-5">
+                <i class="fas fa-images fa-4x text-muted"></i>
+                <h3 class="text-muted mt-3">Nema slika u galeriji</h3>
+                <p class="text-muted">
+                    {% if selected_plant > 0 %}
+                    Nema slika za odabranu biljku.
+                    {% else %}
+                    Postavite prve slike svojih biljaka!
+                    {% endif %}
+                </p>
+                <div class="mt-4">
+                    <a href="{{ url_for('upload_image') }}" class="btn btn-success btn-lg action-btn-primary">
+                        <i class="fas fa-cloud-upload-alt me-2"></i>
+                        <span>Učitaj prvu sliku</span>
+                    </a>
+                    {% if selected_plant > 0 %}
+                    <a href="{{ url_for('gallery') }}" class="btn btn-outline-secondary ms-2">
+                        <i class="fas fa-filter"></i> Prikaži sve slike
+                    </a>
+                    {% endif %}
+                </div>
+            </div>{% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.image-card {
+    transition: transform 0.2s;
+}
+
+.image-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.gallery-image {
+    transition: opacity 0.2s;
+}
+
+.gallery-image:hover {
+    opacity: 0.9;
+}
+
+/* Primary Action Button (Add buttons) */
+.action-btn-primary {
+    border-radius: 0.75rem !important;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(135deg, #28a745, #34ce57);
+    border: none;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.action-btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.action-btn-primary:hover::before {
+    left: 100%;
+}
+
+.action-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    background: linear-gradient(135deg, #34ce57, #28a745);
+}
+
+.action-btn-primary:active {
+    transform: translateY(0);
+    transition: all 0.1s ease;
+}
+</style>
+{% endblock %}

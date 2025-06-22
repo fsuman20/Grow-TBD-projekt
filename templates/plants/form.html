@@ -1,0 +1,202 @@
+{% extends "base.html" %} {% block title %} {% if plant %}Uredi biljku: {{
+plant.name }}{% else %}Dodaj novu biljku{% endif %} - Grow {% endblock %} {%
+block content %}
+<div class="row">
+  <div class="col-md-8 mx-auto">
+    <div class="card">
+      <div class="card-header">
+        <h4 class="mb-0 d-flex align-items-center">
+          <i
+            class="fas fa-{% if plant %}edit{% else %}plus-circle{% endif %} text-success me-2"
+          ></i>
+          {{ title }}
+        </h4>
+      </div>
+      <div class="card-body">
+        <form method="POST" novalidate>
+          {{ form.hidden_tag() }}
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                {{ form.name.label(class="form-label") }} {{
+                form.name(class="form-control" + (" is-invalid" if
+                form.name.errors else "")) }} {% for error in form.name.errors
+                %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+                <div class="form-text">
+                  Unesite jedinstveno ime za vašu biljku
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="mb-3">
+                {{ form.plant_type_id.label(class="form-label") }} {{
+                form.plant_type_id(class="form-select" + (" is-invalid" if
+                form.plant_type_id.errors else "")) }} {% for error in
+                form.plant_type_id.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+                <div class="form-text">Odaberite tip/vrstu biljke</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                {{ form.planted_date.label(class="form-label") }} {{
+                form.planted_date(class="form-control" + (" is-invalid" if
+                form.planted_date.errors else "")) }} {% for error in
+                form.planted_date.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+                <div class="form-text">Kada je biljka posađena/kupljena</div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="mb-3">
+                {{ form.location.label(class="form-label") }} {{
+                form.location(class="form-control" + (" is-invalid" if
+                form.location.errors else ""), placeholder="npr. Dnevna soba,
+                Balkon...") }} {% for error in form.location.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+                {% endfor %}
+                <div class="form-text">Gdje se biljka nalazi (opcionalno)</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            {{ form.notes.label(class="form-label") }} {{
+            form.notes(class="form-control", rows="4", placeholder="Dodatne
+            bilješke o biljci...") }} {% for error in form.notes.errors %}
+            <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+            <div class="form-text">
+              Dodatne informacije, napomene, posebnosti (opcionalno)
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <a href="{{ url_for('plants') }}" class="btn btn-outline-secondary">
+              <i class="fas fa-arrow-left"></i>
+              Natrag na popis
+            </a>
+
+            <div>
+              {% if plant %}
+              <a
+                href="{{ url_for('plant_detail', id=plant.id) }}"
+                class="btn btn-outline-info me-2"
+              >
+                <i class="fas fa-eye"></i>
+                Pogledaj detalje
+              </a>
+              {% endif %} {{ form.submit(class="btn btn-success") }}
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {% if plant %}
+    <!-- Show existing plant info -->
+    <div class="card mt-4">
+      <div class="card-header">
+        <h6 class="mb-0">
+          <i class="fas fa-info-circle text-info"></i>
+          Trenutne informacije
+        </h6>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <strong>Starost:</strong> {{ plant.age_string }}<br />
+            <strong>Kreirana:</strong> {{ plant.created_at.strftime('%d.%m.%Y
+            %H:%M') }}<br />
+            {% if plant.updated_at != plant.created_at %}
+            <strong>Zadnje ažuriranje:</strong> {{
+            plant.updated_at.strftime('%d.%m.%Y %H:%M') }}<br />
+            {% endif %}
+          </div>
+          <div class="col-md-6">
+            <strong>Broj događaja:</strong> {{ plant.events|length }}<br />
+            <strong>Broj slika:</strong> {{ plant.images|length }}<br />
+            <strong>Broj mjerenja:</strong> {{ plant.measurements|length }}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Auto-focus na prvi input
+    const firstInput = document.querySelector(
+      'input[type="text"], input[type="date"], select'
+    );
+    if (firstInput) {
+      firstInput.focus();
+    }
+
+    // Postavi današnji datum ako je forma za novu biljku
+    const plantedDateInput = document.getElementById("planted_date");
+    if (plantedDateInput && !plantedDateInput.value) {
+      const today = new Date().toISOString().split("T")[0];
+      plantedDateInput.value = today;
+    }
+
+    // Form validation preview
+    const form = document.querySelector("form");
+    const nameInput = document.getElementById("name");
+    const typeSelect = document.getElementById("plant_type_id");
+
+    function validateForm() {
+      let isValid = true;
+
+      // Provjeri name
+      if (!nameInput.value.trim()) {
+        nameInput.classList.add("is-invalid");
+        isValid = false;
+      } else {
+        nameInput.classList.remove("is-invalid");
+      }
+
+      // Provjeri tip
+      if (!typeSelect.value || typeSelect.value === "0") {
+        typeSelect.classList.add("is-invalid");
+        isValid = false;
+      } else {
+        typeSelect.classList.remove("is-invalid");
+      }
+
+      return isValid;
+    }
+
+    // Real-time validation
+    nameInput.addEventListener("input", validateForm);
+    typeSelect.addEventListener("change", validateForm);
+
+    // Prevent submit if invalid
+    form.addEventListener("submit", function (e) {
+      if (!validateForm()) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Scroll to first error
+        const firstError = document.querySelector(".is-invalid");
+        if (firstError) {
+          firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+          firstError.focus();
+        }
+      }
+    });
+  });
+</script>
+{% endblock %}

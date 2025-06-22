@@ -1,0 +1,153 @@
+{% extends "base.html" %} {% block title %}{{ title }}{% endblock %} {% block
+content %}
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0"><i class="fas fa-calendar-plus"></i> {{ title }}</h4>
+        </div>
+        <div class="card-body">
+          <form method="POST" novalidate>
+            {{ form.hidden_tag() }}
+
+            <div class="row">
+              <!-- Biljka -->
+              <div class="col-md-6 mb-3">
+                {{ form.plant_id.label(class="form-label") }} {{
+                form.plant_id(class="form-select" + (" is-invalid" if
+                form.plant_id.errors else "")) }} {% if form.plant_id.errors %}
+                <div class="invalid-feedback">
+                  {% for error in form.plant_id.errors %}
+                  <div>{{ error }}</div>
+                  {% endfor %}
+                </div>
+                {% endif %}
+              </div>
+
+              <!-- Tip događaja -->
+              <div class="col-md-6 mb-3">
+                {{ form.event_type_id.label(class="form-label") }} {{
+                form.event_type_id(class="form-select" + (" is-invalid" if
+                form.event_type_id.errors else "")) }} {% if
+                form.event_type_id.errors %}
+                <div class="invalid-feedback">
+                  {% for error in form.event_type_id.errors %}
+                  <div>{{ error }}</div>
+                  {% endfor %}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Datum i vrijeme događaja -->
+            <div class="mb-3">
+              {{ form.event_date.label(class="form-label") }} {{
+              form.event_date(class="form-control" + (" is-invalid" if
+              form.event_date.errors else "")) }} {% if form.event_date.errors
+              %}
+              <div class="invalid-feedback">
+                {% for error in form.event_date.errors %}
+                <div>{{ error }}</div>
+                {% endfor %}
+              </div>
+              {% endif %}
+              <div class="form-text">Format: YYYY-MM-DD HH:MM</div>
+            </div>
+
+            <!-- Opis -->
+            <div class="mb-3">
+              {{ form.description.label(class="form-label") }} {{
+              form.description(class="form-control" + (" is-invalid" if
+              form.description.errors else ""), rows="3", placeholder="Kratki
+              opis događaja...") }} {% if form.description.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.description.errors %}
+                <div>{{ error }}</div>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Bilješke -->
+            <div class="mb-3">
+              {{ form.notes.label(class="form-label") }} {{
+              form.notes(class="form-control" + (" is-invalid" if
+              form.notes.errors else ""), rows="3", placeholder="Dodatne
+              bilješke o događaju...") }} {% if form.notes.errors %}
+              <div class="invalid-feedback">
+                {% for error in form.notes.errors %}
+                <div>{{ error }}</div>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Završeno -->
+            <div class="mb-3">
+              <div class="form-check">
+                {{ form.is_completed(class="form-check-input") }} {{
+                form.is_completed.label(class="form-check-label") }}
+              </div>
+              <div class="form-text">Označite ako je događaj već izvršen</div>
+            </div>
+
+            <div class="d-flex gap-2">
+              {{ form.submit(class="btn btn-success") }}
+              <a href="{{ url_for('events') }}" class="btn btn-secondary"
+                >Odustani</a
+              >
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Pomoćni info -->
+      <div class="card mt-3">
+        <div class="card-body">
+          <h6 class="card-title text-muted">💡 Tipovi događaja:</h6>
+          <div class="row">
+            <div class="col-md-6">
+              <small class="text-muted">
+                • <strong>Zalijevanje</strong> - Redovito zalijevanje biljke<br />
+                • <strong>Gnojenje</strong> - Dodavanje gnojiva<br />
+                • <strong>Presađivanje</strong> - Premještanje u veći lonac
+              </small>
+            </div>
+            <div class="col-md-6">
+              <small class="text-muted">
+                • <strong>Obrezivanje</strong> - Uklanjanje suhih dijelova<br />
+                • <strong>Prskanje</strong> - Tretiranje protiv štetočina<br />
+                • <strong>Mjerenje</strong> - Praćenje rasta i razvoja
+              </small>
+            </div>
+          </div>
+          <hr />
+          <small class="text-muted">
+            <i class="fas fa-lightbulb"></i>
+            <strong>Napomena:</strong> Kada dodate događaj, automatski će se
+            kreirati podsjetnik na osnovi postavki tipa događaja.
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Automatski postaviti današnji datum i vrijeme
+  document.addEventListener("DOMContentLoaded", function () {
+    const dateField = document.getElementById("event_date");
+    if (!dateField.value) {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const day = String(now.getDate()).padStart(2, "0");
+      const hours = String(now.getHours()).padStart(2, "0");
+      const minutes = String(now.getMinutes()).padStart(2, "0");
+
+      dateField.value = `${year}-${month}-${day} ${hours}:${minutes}`;
+    }
+  });
+</script>
+{% endblock %}

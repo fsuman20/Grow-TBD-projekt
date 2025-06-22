@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block title %}Moje biljke - Grow{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="display-6">
+                Moje biljke
+            </h1>
+            <a href="{{ url_for('add_plant') }}" class="btn btn-success btn-lg action-btn-primary">
+                <i class="fas fa-seedling me-2"></i>
+                <span>Dodaj biljku</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="search" class="form-label">Pretraži</label>
+                        <input type="text" class="form-control" name="search" 
+                               value="{{ search }}" placeholder="Naziv biljke...">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="type" class="form-label">Tip biljke</label>
+                        <select name="type" class="form-select">
+                            <option value="0">Svi tipovi</option>
+                            {% for plant_type in plant_types %}
+                            <option value="{{ plant_type.id }}" 
+                                    {% if selected_type == plant_type.id %}selected{% endif %}>
+                                {{ plant_type.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="fas fa-search"></i> Filtriraj
+                        </button>
+                        <a href="{{ url_for('plants') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times-circle"></i> Očisti
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Plants Grid -->
+{% if plants.items %}
+<div class="row">
+    {% for plant in plants.items %}
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card plant-card h-100">
+            {% if plant.images %}
+            <img src="{{ url_for('uploaded_file', filename=plant.images[0].filename) }}" 
+                 class="card-img-top" style="height: 200px; object-fit: cover;" 
+                 alt="{{ plant.name }}">            {% else %}
+            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                 style="height: 200px;">
+                <i class="fas fa-seedling fa-3x text-muted"></i>
+            </div>
+            {% endif %}
+            
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5 class="card-title mb-0">{{ plant.name }}</h5>
+                    {% if plant.plant_type %}
+                    <span class="badge bg-secondary">{{ plant.plant_type.name }}</span>
+                    {% endif %}
+                </div>
+                
+                {% if plant.plant_type and plant.plant_type.scientific_name %}
+                <p class="text-muted small fst-italic mb-2">{{ plant.plant_type.scientific_name }}</p>
+                {% endif %}
+                
+                <div class="mb-3">
+                    <small class="text-muted">
+                        <i class="fas fa-calendar-alt"></i>
+                        Posađena: {{ plant.planted_date.strftime('%d.%m.%Y') }}
+                    </small>
+                    <br>
+                    <small class="text-muted">
+                        <i class="fas fa-clock"></i>
+                        {{ plant.age_string }}
+                    </small>
+                    {% if plant.location %}
+                    <br>
+                    <small class="text-muted">
+                        <i class="fas fa-map-marker-alt"></i>
+                        {{ plant.location }}
+                    </small>
+                    {% endif %}
+                </div>
+                
+                <!-- Stats -->
+                <div class="row text-center mb-3">
+                    <div class="col-4">
+                        <div class="text-muted small">Događaji</div>
+                        <div class="fw-bold">{{ plant.events|length }}</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-muted small">Slike</div>
+                        <div class="fw-bold">{{ plant.images|length }}</div>
+                    </div>
+                    <div class="col-4">
+                        <div class="text-muted small">Mjerenja</div>
+                        <div class="fw-bold">{{ plant.measurements|length }}</div>
+                    </div>
+                </div>
+                
+                <!-- Latest measurement health status -->
+                {% if plant.measurements %}
+                    {% set latest_measurement = plant.measurements|sort(attribute='measurement_date', reverse=true)|first %}
+                    {% if latest_measurement.health_status %}
+                    <div class="mb-3">
+                        <small class="text-muted">Zdravlje:</small>
+                        <span class="health-{{ latest_measurement.health_status }} fw-bold">
+                            {{ latest_measurement.health_status_text }}
+                        </span>
+                    </div>
+                    {% endif %}
+                {% endif %}       
+                    <div class="mt-auto">
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('plant_detail', id=plant.id) }}" 
+                           class="btn btn-primary">
+                            <i class="fas fa-eye"></i> Detalji
+                        </a>                        <div class="btn-group btn-group-sm w-100">
+                            <a href="{{ url_for('edit_plant', id=plant.id) }}" 
+                               class="btn btn-outline-secondary">
+                                <i class="fas fa-edit"></i> Uredi
+                            </a>
+                            <a href="{{ url_for('plant_history', id=plant.id) }}" 
+                               class="btn btn-outline-info">
+                                <i class="fas fa-history"></i> Povijest
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if plants.pages > 1 %}
+<nav aria-label="Navigacija stranica">
+    <ul class="pagination justify-content-center">
+        {% if plants.has_prev %}
+        <li class="page-item">            <a class="page-link" href="{{ url_for('plants', page=plants.prev_num, search=search, type=selected_type) }}">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        </li>
+        {% endif %}
+        
+        {% for page_num in plants.iter_pages() %}
+            {% if page_num %}
+                {% if page_num != plants.page %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('plants', page=page_num, search=search, type=selected_type) }}">
+                        {{ page_num }}
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item active">
+                    <span class="page-link">{{ page_num }}</span>
+                </li>
+                {% endif %}
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">...</span>
+            </li>
+            {% endif %}
+        {% endfor %}
+        
+        {% if plants.has_next %}
+        <li class="page-item">            <a class="page-link" href="{{ url_for('plants', page=plants.next_num, search=search, type=selected_type) }}">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<!-- Empty State -->
+<div class="row">
+    <div class="col-12">        <div class="text-center py-5">
+            <i class="fas fa-seedling fa-4x text-muted"></i>
+            <h3 class="mt-3 text-muted">
+                {% if search or selected_type > 0 %}
+                Nema biljaka prema zadanim kriterijima
+                {% else %}
+                Nemate još nijednu biljku
+                {% endif %}
+            </h3>
+            <p class="text-muted">
+                {% if search or selected_type > 0 %}
+                Pokušajte promijeniti filtere ili dodajte novu biljku.
+                {% else %}
+                Počnite s dodavanjem svoje prve biljke.
+                {% endif %}
+            </p>
+            <div class="mt-4">
+                {% if search or selected_type > 0 %}                <a href="{{ url_for('plants') }}" class="btn btn-outline-secondary me-2">
+                    <i class="fas fa-times-circle"></i>
+                    Ukloni filtere
+                </a>
+                {% endif %}
+                <a href="{{ url_for('add_plant') }}" class="btn btn-success btn-lg action-btn-primary">
+                    <i class="fas fa-seedling me-2"></i>
+                    <span>Dodaj prvu biljku</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<style>
+/* Primary Action Button (Add buttons) */
+.action-btn-primary {
+    border-radius: 0.75rem !important;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(135deg, #28a745, #34ce57);
+    border: none;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.action-btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.action-btn-primary:hover::before {
+    left: 100%;
+}
+
+.action-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    background: linear-gradient(135deg, #34ce57, #28a745);
+}
+
+.action-btn-primary:active {
+    transform: translateY(0);
+    transition: all 0.1s ease;
+}
+</style>
+
+{% endblock %}

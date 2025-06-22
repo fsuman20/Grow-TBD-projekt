@@ -1,0 +1,128 @@
+{% extends "base.html" %} {% block title %}Učitaj sliku | Grow{% endblock %} {%
+block content %}
+<div class="container-fluid">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="mb-0">
+            <i class="fas fa-cloud-upload-alt text-success"></i> {{ title }}
+          </h2>
+        </div>
+        <div class="card-body">
+          <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+
+            <div class="mb-3">
+              {{ form.plant_id.label(class="form-label") }} {{
+              form.plant_id(class="form-select") }} {% if form.plant_id.errors
+              %}
+              <div class="invalid-feedback d-block">
+                {% for error in form.plant_id.errors %} {{ error }} {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              {{ form.image.label(class="form-label") }} {{
+              form.image(class="form-control", accept="image/*") }}
+              <div class="form-text">
+                Podržani formati: PNG, JPG, JPEG, GIF. Maksimalna veličina:
+                16MB.
+              </div>
+              {% if form.image.errors %}
+              <div class="invalid-feedback d-block">
+                {% for error in form.image.errors %} {{ error }} {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              {{ form.description.label(class="form-label") }} {{
+              form.description(class="form-control", rows="3") }}
+              <div class="form-text">
+                Opcionalni opis slike (npr. "Napredak rasta", "Novi listovi",
+                itd.)
+              </div>
+              {% if form.description.errors %}
+              <div class="invalid-feedback d-block">
+                {% for error in form.description.errors %} {{ error }} {% endfor
+                %}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <a
+                href="{{ url_for('gallery') }}"
+                class="btn btn-outline-secondary"
+              >
+                <i class="fas fa-times-circle"></i> Odustani
+              </a>
+              <button type="submit" class="btn btn-success">
+                <i class="fas fa-cloud-upload-alt"></i> Učitaj sliku
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Pregled učitane slike -->
+      <div id="imagePreview" class="card mt-3" style="display: none">
+        <div class="card-header">
+          <h6 class="mb-0"><i class="fas fa-eye"></i> Pregled slike</h6>
+        </div>
+        <div class="card-body text-center">
+          <img
+            id="previewImg"
+            class="img-fluid rounded"
+            style="max-height: 300px"
+          />
+          <div id="imageInfo" class="mt-2 text-muted small"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const fileInput = document.getElementById("image");
+    const preview = document.getElementById("imagePreview");
+    const previewImg = document.getElementById("previewImg");
+    const imageInfo = document.getElementById("imageInfo");
+
+    fileInput.addEventListener("change", function (e) {
+      const file = e.target.files[0];
+
+      if (file) {
+        if (file.type.startsWith("image/")) {
+          const reader = new FileReader();
+
+          reader.onload = function (e) {
+            previewImg.src = e.target.result;
+
+            // Prikaži informacije o datoteci
+            const sizeInMB = (file.size / 1024 / 1024).toFixed(1);
+            imageInfo.innerHTML = `
+                        <strong>Datoteka:</strong> ${file.name}<br>
+                        <strong>Veličina:</strong> ${sizeInMB} MB<br>
+                        <strong>Tip:</strong> ${file.type}
+                    `;
+
+            preview.style.display = "block";
+          };
+
+          reader.readAsDataURL(file);
+        } else {
+          alert("Molimo odaberite sliku (PNG, JPG, JPEG ili GIF).");
+          fileInput.value = "";
+          preview.style.display = "none";
+        }
+      } else {
+        preview.style.display = "none";
+      }
+    });
+  });
+</script>
+{% endblock %}

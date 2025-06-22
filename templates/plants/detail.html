@@ -1,0 +1,347 @@
+{% extends "base.html" %} {% block title %}{{ plant.name }} - Detalji{% endblock
+%} {% block content %}
+<div class="container mt-4">
+  <!-- Naslov i osnovne informacije -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="{{ url_for('index') }}">Početna</a>
+          </li>
+          <li class="breadcrumb-item">
+            <a href="{{ url_for('plants') }}">Biljke</a>
+          </li>
+          <li class="breadcrumb-item active">{{ plant.name }}</li>
+        </ol>
+      </nav>
+
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <h1 class="mb-2">🌱 {{ plant.name }}</h1>
+          {% if plant.plant_type %}
+          <p class="text-muted mb-1">
+            <strong>{{ plant.plant_type.name }}</strong>
+            {% if plant.plant_type.scientific_name %}
+            <em>({{ plant.plant_type.scientific_name }})</em>
+            {% endif %}
+          </p>
+          {% endif %}
+          <p class="text-muted">
+            📅 Posađena: {{ plant.planted_date.strftime('%d.%m.%Y') }} ({{
+            plant.age_text }})
+          </p>
+          {% if plant.location %}
+          <p class="text-muted">📍 Lokacija: {{ plant.location }}</p>
+          {% endif %}
+        </div>
+        <div class="btn-group">
+          <a
+            href="{{ url_for('add_measurement') }}?plant={{ plant.id }}"
+            class="btn btn-success"
+          >
+            <i class="fas fa-ruler-combined"></i> Dodaj mjerenje
+          </a>
+          <a
+            href="{{ url_for('plant_history', id=plant.id) }}"
+            class="btn btn-info"
+          >
+            <i class="fas fa-history"></i> Povijest
+          </a>
+          <a
+            href="{{ url_for('edit_plant', id=plant.id) }}"
+            class="btn btn-primary"
+          >
+            <i class="fas fa-edit"></i> Uredi
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Leva kolona - Osnovne informacije i statistike -->
+    <div class="col-lg-8">
+      <!-- Statistike rasta -->
+      {% if growth_stats %}
+      <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">
+            <i class="fas fa-chart-line"></i> Statistike rasta
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <h6>📏 Dimenzije</h6>
+              <ul class="list-unstyled">
+                <li>
+                  <strong>Trenutna visina:</strong>
+                  {% if growth_stats.current_height_cm %} {{
+                  growth_stats.current_height_cm }} cm {% else %} Nema podataka
+                  {% endif %}
+                </li>
+                <li>
+                  <strong>Ukupan rast:</strong>
+                  {% if growth_stats.height_growth_cm and
+                  growth_stats.height_growth_cm > 0 %} +{{
+                  growth_stats.height_growth_cm }} cm {% else %} Nema podataka
+                  {% endif %}
+                </li>
+                <li>
+                  <strong>Listovi:</strong>
+                  {% if growth_stats.current_leaf_count %} {{
+                  growth_stats.current_leaf_count }} {% else %} Nema podataka {%
+                  endif %}
+                </li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h6>📊 Mjerenja</h6>
+              <ul class="list-unstyled">
+                <li>
+                  <strong>Ukupno mjerenja:</strong> {{
+                  growth_stats.total_measurements }}
+                </li>
+                <li>
+                  <strong>Prvo mjerenje:</strong>
+                  {% if growth_stats.first_measurement_date %} {{
+                  growth_stats.first_measurement_date.strftime('%d.%m.%Y') }} {%
+                  else %} Nema {% endif %}
+                </li>
+                <li>
+                  <strong>Zadnje mjerenje:</strong>
+                  {% if growth_stats.last_measurement_date %} {{
+                  growth_stats.last_measurement_date.strftime('%d.%m.%Y') }} {%
+                  else %} Nema {% endif %}
+                </li>
+                <li>
+                  <strong>Zdravlje:</strong>
+                  {% if growth_stats.current_health_status %} {% set
+                  health_classes = {1: 'danger', 2: 'warning', 3: 'info', 4:
+                  'primary', 5: 'success'} %} {% set health_texts = {1: 'Vrlo
+                  loše', 2: 'Loše', 3: 'Osrednje', 4: 'Dobro', 5: 'Izvrsno'} %}
+                  <span
+                    class="badge bg-{{ health_classes[growth_stats.current_health_status] }}"
+                  >
+                    {{ health_texts[growth_stats.current_health_status] }}
+                  </span>
+                  {% else %}
+                  <span class="text-muted">Nema podataka</span>
+                  {% endif %}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Najnovija mjerenja -->
+      {% if measurements %}
+      <div class="card mb-4">
+        <div
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <h5 class="mb-0">
+            <i class="fas fa-ruler-combined"></i> Najnovija mjerenja
+          </h5>
+          <a
+            href="{{ url_for('measurements') }}?plant={{ plant.id }}"
+            class="btn btn-sm btn-outline-primary"
+          >
+            Vidi sve mjerenja
+          </a>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Datum</th>
+                  <th>Visina</th>
+                  <th>Širina</th>
+                  <th>Listovi</th>
+                  <th>Cvijetovi</th>
+                  <th>Zdravlje</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for measurement in measurements %}
+                <tr>
+                  <td>
+                    {{ measurement.measurement_date.strftime('%d.%m.%Y') }}
+                  </td>
+                  <td>
+                    {% if measurement.height_cm %} {{ measurement.height_cm }}
+                    cm {% else %} - {% endif %}
+                  </td>
+                  <td>
+                    {% if measurement.width_cm %} {{ measurement.width_cm }} cm
+                    {% else %} - {% endif %}
+                  </td>
+                  <td>
+                    {% if measurement.leaf_count %} {{ measurement.leaf_count }}
+                    {% else %} - {% endif %}
+                  </td>
+                  <td>
+                    {% if measurement.flower_count %} {{
+                    measurement.flower_count }} {% else %} - {% endif %}
+                  </td>
+                  <td>
+                    {% if measurement.health_status %} {% set health_classes =
+                    {1: 'danger', 2: 'warning', 3: 'info', 4: 'primary', 5:
+                    'success'} %}
+                    <span
+                      class="badge bg-{{ health_classes[measurement.health_status] }}"
+                    >
+                      {{ measurement.health_status_text }}
+                    </span>
+                    {% else %} - {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Događaji -->
+      {% if events %}
+      <div class="card mb-4">
+        <div
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <h5 class="mb-0">
+            <i class="fas fa-calendar-alt"></i> Najnoviji događaji
+          </h5>
+          <a
+            href="{{ url_for('events') }}?plant={{ plant.id }}"
+            class="btn btn-sm btn-outline-primary"
+          >
+            Vidi sve događaje
+          </a>
+        </div>
+        <div class="card-body">
+          {% for event in events %}
+          <div
+            class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded"
+          >
+            <div>
+              <strong
+                >{{ event.event_type.name if event.event_type else 'Događaj'
+                }}</strong
+              >
+              <br />
+              <small class="text-muted"
+                >{{ event.event_date.strftime('%d.%m.%Y %H:%M') }}</small
+              >
+              {% if event.description %}
+              <br />
+              <small>{{ event.description }}</small>
+              {% endif %}
+            </div>
+            <div>
+              {% if event.is_completed %}
+              <span class="badge bg-success">Završeno</span>
+              {% elif event.is_overdue %}
+              <span class="badge bg-danger">Zakasnilo</span>
+              {% else %}
+              <span class="badge bg-primary">Planirano</span>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Desna kolona - Slike i podsjetnici -->
+    <div class="col-lg-4">
+      <!-- Podsjetnici -->
+      {% if reminders %}
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="fas fa-bell"></i> Podsjetnici</h5>
+        </div>
+        <div class="card-body">
+          {% for reminder in reminders %}
+          <div
+            class="alert alert-{% if reminder.status == 'Hitno' %}danger{% elif reminder.status == 'Uskoro' %}warning{% else %}info{% endif %} alert-sm"
+          >
+            <strong
+              >{{ reminder.event_type.name if reminder.event_type else
+              'Podsjetnik' }}</strong
+            ><br />
+            <small>{{ reminder.reminder_date.strftime('%d.%m.%Y') }}</small
+            ><br />
+            <small>{{ reminder.message }}</small>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Galerija slika -->
+      {% if images %}
+      <div class="card">
+        <div
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <h5 class="mb-0"><i class="fas fa-images"></i> Galerija</h5>
+          <a
+            href="{{ url_for('gallery') }}?plant={{ plant.id }}"
+            class="btn btn-sm btn-outline-primary"
+          >
+            Vidi sve slike
+          </a>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            {% for image in images[:6] %}
+            <div class="col-6 mb-2">
+              <img
+                src="{{ url_for('static', filename='uploads/' + image.filename) }}"
+                class="img-fluid rounded"
+                alt="{{ image.description or 'Slika biljke' }}"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="{{ image.upload_date.strftime('%d.%m.%Y') }}"
+              />
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Bilješke -->
+      {% if plant.notes %}
+      <div class="card mt-4">
+        <div class="card-header">
+          <h5 class="mb-0"><i class="fas fa-sticky-note"></i> Bilješke</h5>
+        </div>
+        <div class="card-body">
+          <p class="mb-0">{{ plant.notes|nl2br }}</p>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+  // Inicijaliziraj tooltips
+  document.addEventListener("DOMContentLoaded", function () {
+    var tooltipTriggerList = [].slice.call(
+      document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    );
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+  });
+</script>
+{% endblock %}

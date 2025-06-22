@@ -1,0 +1,402 @@
+/* Custom styles for Plant Tracker application */
+
+:root {
+  --primary-green: #2e7d32;
+  --light-green: #4caf50;
+  --success-green: #66bb6a;
+  --accent-green: #81c784;
+  --bg-light-green: #e8f5e8;
+  --elegant-font: 'Lora', serif;
+}
+
+/* General Styles */
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+}
+
+/* Page Titles with Elegant Font */
+.display-6 {
+  font-family: var(--elegant-font) !important;
+  font-weight: 600 !important;
+  color: var(--primary-green) !important;
+  letter-spacing: -0.5px !important;
+}
+
+.navbar-brand {
+  font-family: var(--elegant-font) !important;
+  font-weight: 600 !important;
+  font-size: 1.8rem !important;
+  letter-spacing: -0.5px !important;
+}
+
+.navbar-brand-text {
+  font-family: var(--elegant-font) !important;
+  font-size: 1.8rem !important;
+  font-weight: 600 !important;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+  color: white !important;
+  letter-spacing: -0.5px !important;
+}
+
+/* Enhanced Navigation Styling */
+.navbar {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 50%, #17a2b8 100%) !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  padding: 0.75rem 0;
+}
+
+.navbar-brand {
+  font-family: var(--elegant-font) !important;
+  font-weight: 600;
+  font-size: 1.8rem;
+  letter-spacing: -0.5px;
+}
+
+.navbar-brand img {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  background: none !important;
+  border: none !important;
+}
+
+.navbar-brand span {
+  font-family: var(--elegant-font) !important;
+  font-size: 1.8rem;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  color: white !important;
+  letter-spacing: -0.5px;
+}
+
+/* Additional elegant typography */
+h1, h2, h3 {
+  font-family: var(--elegant-font) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.3px !important;
+}
+
+h1 {
+  font-size: 2.5rem !important;
+}
+
+h2 {
+  font-size: 2rem !important;
+}
+
+h3 {
+  font-size: 1.5rem !important;
+}
+
+.navbar-nav .nav-link {
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Plant Cards */
+.plant-card {
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.plant-card .card-img-top {
+  border-top-left-radius: 0.375rem;
+  border-top-right-radius: 0.375rem;
+}
+
+/* Health Status Colors */
+.health-1 {
+  color: #dc3545;
+  font-weight: bold;
+}
+.health-2 {
+  color: #fd7e14;
+  font-weight: bold;
+}
+.health-3 {
+  color: #ffc107;
+  font-weight: bold;
+}
+.health-4 {
+  color: #198754;
+  font-weight: bold;
+}
+.health-5 {
+  color: #20c997;
+  font-weight: bold;
+}
+
+/* Status Badges */
+.status-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Removed unused calendar and progress styles */
+
+/* Image Gallery */
+.gallery-item {
+  cursor: pointer;
+}
+
+.gallery-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  color: white;
+  padding: 1rem;
+  transform: translateY(0);
+}
+
+/* Statistics Cards */
+.stat-card {
+  background: linear-gradient(135deg, var(--primary-green), var(--light-green));
+  color: white;
+  border: none;
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.stat-icon {
+  font-size: 3rem;
+  opacity: 0.8;
+}
+
+/* Forms */
+.form-control:focus {
+  border-color: var(--light-green);
+  box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+}
+
+.btn-success {
+  background-color: var(--light-green);
+  border-color: var(--light-green);
+}
+
+.btn-success:hover {
+  background-color: var(--primary-green);
+  border-color: var(--primary-green);
+}
+
+/* Timeline */
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 0.75rem;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--light-green);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: -2.25rem;
+  top: 0.25rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: var(--light-green);
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Alerts */
+.alert {
+  border: none;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Tables */
+.table {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.table th {
+  background-color: var(--bg-light-green);
+  border: none;
+  font-weight: 600;
+  color: var(--primary-green);
+}
+
+/* Enhanced Dashboard Cards with Gradients */
+.bg-success {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 50%, #17a2b8 100%) !important;
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3) !important;
+}
+
+.bg-primary {
+  background: linear-gradient(135deg, #007bff 0%, #6f42c1 50%, #e83e8c 100%) !important;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3) !important;
+}
+
+.bg-warning {
+  background: linear-gradient(135deg, #ffc107 0%, #fd7e14 50%, #dc3545 100%) !important;
+  box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3) !important;
+}
+
+.bg-danger {
+  background: linear-gradient(135deg, #dc3545 0%, #e83e8c 50%, #6f42c1 100%) !important;
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3) !important;
+}
+
+/* Enhanced card transitions and hover effects */
+.card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Dashboard specific card styling */
+.dashboard-card {
+  border: none;
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.dashboard-card .card-body {
+  position: relative;
+  padding: 1.5rem;
+}
+
+.dashboard-card .fas {
+  opacity: 0.8;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.dashboard-card h4 {
+  font-weight: bold;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-card p {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  margin-bottom: 0;
+}
+
+/* Card titles with elegant font */
+.card-title {
+  font-family: var(--elegant-font) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.2px !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .plant-card {
+    margin-bottom: 1rem;
+  }
+
+  .stat-card {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Loading Spinner */
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--light-green);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-green);
+}
+
+/* Removed animations for static design */
+
+/* Chart Container */
+.chart-container {
+  position: relative;
+  height: 300px;
+  margin: 1rem 0;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  color: #6c757d;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  color: #6c757d;
+  margin-bottom: 1rem;
+}
+
+.empty-state p {
+  color: #6c757d;
+  margin-bottom: 2rem;
+}
+
+/* Page Loading */
+.page-loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-light-green: #2d5a2d;
+  }
+
+  body {
+    background-color: #121212;
+    color: #ffffff;
+  }
+
+  .card {
+    background-color: #1e1e1e;
+    border-color: #333;
+  }
+
+  .table {
+    --bs-table-bg: #1e1e1e;
+    color: #ffffff;
+  }
+}

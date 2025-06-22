@@ -1,0 +1,35 @@
+{% extends "base.html" %} {% block title %}500 - Server greška | Grow{% endblock
+%} {% block content %}
+<div class="container-fluid">
+  <div class="row justify-content-center">
+    <div class="col-md-6 text-center">
+      <div class="error-page py-5">
+        <div class="mb-4">
+          <i
+            class="fas fa-exclamation-triangle text-danger"
+            style="font-size: 5rem"
+          ></i>
+        </div>
+
+        <h1 class="display-4 text-muted">500</h1>
+        <h2 class="mb-3">Greška servera</h2>
+        <p class="lead text-muted">
+          Dogodila se neočekivana greška. Molimo pokušajte kasnije.
+        </p>
+
+        <div class="mt-4">
+          <a href="{{ url_for('index') }}" class="btn btn-success btn-lg me-2">
+            <i class="fas fa-home"></i> Početna stranica
+          </a>
+          <button
+            onclick="location.reload()"
+            class="btn btn-outline-secondary btn-lg"
+          >
+            <i class="fas fa-redo"></i> Osvježi
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
