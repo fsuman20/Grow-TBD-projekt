@@ -1,4 +1,7 @@
-![Plant Tracker](static/img/full_logo.png)
+<p align="center">
+<img src="static/img/full_logo.png" alt="Plant Tracker" width="auto" height="400" display: block>
+</p> 
+
 # 🌱 Grow - Aplikacija za praćenje skrbi o biljkama
 
 Sveobuhvatna web aplikacija za praćenje i upravljanje skrbi o biljkama izgrađena s Flask-om i PostgreSQL-om, koja uključuje napredne temporalne i aktivne koncepte baze podataka.
