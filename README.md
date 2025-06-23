@@ -24,10 +24,9 @@ Sveobuhvatna web aplikacija za praćenje i upravljanje skrbi o biljkama izgrađe
 ### Preduvjeti
 - Python 3.8+
 - PostgreSQL 12+
-- Git (opcionalno)
 
 ### Instalacija
-
+ ** MOguće je da je skripta pokvarena u tom slučaj potrebno je manulano instalirati requirements i stvoriti databazu i izvršiti sql
 #### Windows
 ```bash
 # Kloniraj repozitorij
